@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>QR code generator</h1>
+            <p>Paste a URL or enter text to create QR Code</p>
+            <img class="image" src="https://media0.giphy.com/media/vmQAsNXEgvItJxpgL4/giphy.gif?cid=ecf05e47tqrz5ejcpfzyamor6qryrxrkexgo7xqf7gdu6eau&ep=v1_gifs_search&rid=giphy.gif&ct=g" alt="null">
+        </header>
+        <div class="form">
+            <input id="inputText" type="text" placeholder="Enter text or URL">
+            <button id="generateButton" onclick="generateQRCode()">
+                Generate
+            </button>
+            <button id="downloadButton" onclick="downloadQRCode()" style="display:none">
+                Download QR Code
+            </button>
+        </div>
+        <div class="qr-container" id="qrCode">
+        </div>
+    </div>
+
+   
+
+        <script>
+        function generateQRCode() {
+            const inputText = document.getElementById("inputText").value;
+            const qrCodeContainer = document.getElementById("qrCode");
+            const imageContainer = document.querySelector(".image");
+
+            if (inputText) {
+                const qrCodeImage = document.createElement("img");
+                qrCodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(inputText)}&size=200x200`;
+                qrCodeImage.alt = "Generated QR Code";
+
+                qrCodeContainer.innerHTML = "";
+                qrCodeContainer.appendChild(qrCodeImage);
+                imageContainer.style.display = "none";
+                const downloadButton = document.getElementById("downloadButton");
+                downloadButton.style.display = "block";
+            } else {
+                qrCodeContainer.innerHTML = "Please enter a valid text or URL.";
+            }
+        }
+        async function downloadQRCode() {
+            const qrCodeImage = document.querySelector(".qr-container img");
+            
+            if (qrCodeImage) {
+                const response = await fetch(qrCodeImage.src);
+                const blob = await response.blob();
+                
+                const downloadLink = document.createElement("a");
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = "qr-code.png";
+                downloadLink.click();
+                URL.revokeObjectURL(downloadLink.href);
+            }
+        }
+    </script>
+</body>
+</html>
